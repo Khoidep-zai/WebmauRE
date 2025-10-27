@@ -5,7 +5,6 @@ let serviceHistory = JSON.parse(localStorage.getItem('serviceHistory')) || [];
 let services = {
     'giặt-ủi': { name: 'Giặt ủi', price: 30000 },
     'sửa-chữa': { name: 'Sửa chữa', price: 50000 },
-    'đặt-phòng-khách': { name: 'Đặt phòng khách', price: 100000 },
     'gửi-giữ-xe': { name: 'Gửi giữ xe', price: 0 },
     'internet': { name: 'Internet WiFi', price: 100000 },
     'vệ-sinh': { name: 'Vệ sinh phòng', price: 40000 }

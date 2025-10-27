@@ -1,0 +1,54 @@
+/* Minimal admin styles - keep consistent with site */
+.admin-main {
+    padding: 24px;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.requests-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.request-card {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.request-info {
+    flex: 1 1 auto;
+}
+
+.request-meta {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.request-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; background: #f7f7f7; cursor: pointer; }
+.btn-primary { background:#007bff; color:white; border-color: #007bff; }
+.btn-danger { background:#dc3545; color:white; border-color: #dc3545; }
+.status-badge { padding: 6px 8px; border-radius: 6px; font-weight: 600; }
+.status-pending { background: #fff3cd; color: #856404; }
+.status-processing { background: #cce5ff; color: #004085; }
+.status-completed { background:#d4edda; color:#155724; }
+.status-cancelled { background:#f8d7da; color:#721c24; }
+
+.small { font-size: 13px; color: #444; }

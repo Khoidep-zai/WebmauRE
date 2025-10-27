@@ -18,13 +18,14 @@
             
             <nav class="nav-menu">
                 <ul>
-                    <li onclick="window.location.href='index.html'">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Lớp học</span>
-                    </li>
+                    <!-- Lớp học menu removed -->
                     <li onclick="window.location.href='feed.html'">
                         <i class="fas fa-newspaper"></i>
                         <span>Bảng tin</span>
+                    </li>
+                    <li id="adminLink" style="display:none">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Trang quản trị</span>
                     </li>
                     <li onclick="window.location.href='dorm.html'">
                         <i class="fas fa-bed"></i>
@@ -89,16 +90,6 @@
                             <p>Từ 50.000đ</p>
                             <span class="service-badge">Hỗ trợ nhanh</span>
                         </div>
-
-                        <div class="service-card" onclick="selectService('đặt-phòng-khách')">
-                            <div class="service-icon">
-                                <i class="fas fa-door-open"></i>
-                            </div>
-                            <h3>Đặt phòng khách</h3>
-                            <p>Từ 100.000đ/đêm</p>
-                            <span class="service-badge">Mới</span>
-                        </div>
-
                         <div class="service-card" onclick="selectService('gửi-giữ-xe')">
                             <div class="service-icon">
                                 <i class="fas fa-bicycle"></i>

@@ -18,13 +18,14 @@
             
             <nav class="nav-menu">
                 <ul>
-                    <li onclick="window.location.href='index.html'">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Lớp học</span>
-                    </li>
+                    <!-- Lớp học menu removed -->
                     <li onclick="window.location.href='feed.html'">
                         <i class="fas fa-newspaper"></i>
                         <span>Bảng tin</span>
+                    </li>
+                    <li id="adminLink" style="display:none">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Trang quản trị</span>
                     </li>
                     <li class="active">
                         <i class="fas fa-bed"></i>
@@ -284,6 +285,7 @@
     </div>
 
     <script src="dorm.js"></script>
+    <script src="admin-helper.js"></script>
 </body>
 </html>
 

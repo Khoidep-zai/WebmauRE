@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Quản lý yêu cầu</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li onclick="window.location.href='index.html'">
+                        <i class="fas fa-home"></i>
+                        <span>Trang chính</span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ</span>
+                    </li>
+                    <li class="active" id="adminMenuItem">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Trang quản trị</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile" id="adminUserProfile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="adminAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="adminUserName">Quản trị viên</div>
+                    <span class="user-badge" id="adminUserBadge">Admin</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <main class="main-content admin-main">
+            <h1 class="page-title">Quản lý yêu cầu dịch vụ</h1>
+
+            <div class="admin-actions">
+                <button id="refreshBtn" class="btn" title="Làm mới danh sách">Làm mới</button>
+                <button id="showAllBtn" class="btn">Hiện tất cả</button>
+                <button id="showPendingBtn" class="btn btn-primary">Chỉ chờ duyệt</button>
+                <button id="exportBtn" class="btn">Xuất JSON</button>
+            </div>
+
+            <div id="requestsContainer" class="requests-container">
+                <!-- Requests will be rendered here -->
+            </div>
+
+            <footer class="footer">
+                <p>Admin panel — hệ thống demo lưu trữ dữ liệu trên localStorage.</p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

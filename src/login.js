@@ -28,24 +28,40 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validate credentials
         const validMSSV = '2374802010247';
-        const validPassword = '12345678';
-        
-        if (mssv === validMSSV && password === validPassword) {
-            // Save user info to localStorage
+        const studentPassword = '12345678'; // existing demo student password
+        const adminPassword = '123456'; // admin password per request
+
+        if (mssv === validMSSV && password === studentPassword) {
+            // Save regular student info to localStorage
             const userInfo = {
                 mssv: mssv,
                 email: mssv + '@vlu.edu.vn',
                 name: 'Nguyễn Văn A',
-                loggedIn: true
+                loggedIn: true,
+                isAdmin: false
             };
-            
             localStorage.setItem('user', JSON.stringify(userInfo));
-            
             // Redirect to feed page
             window.location.href = 'feed.html';
-        } else {
-            alert('MSSV hoặc mật khẩu không đúng!\n\nMSSV: 2374802010247\nMật khẩu: 12345678');
+            return;
         }
+
+        if (mssv === validMSSV && password === adminPassword) {
+            // Save admin info to localStorage
+            const userInfo = {
+                mssv: mssv,
+                email: mssv + '@vlu.edu.vn',
+                name: 'Nguyễn Văn A (Admin)',
+                loggedIn: true,
+                isAdmin: true
+            };
+            localStorage.setItem('user', JSON.stringify(userInfo));
+            // Redirect to admin page
+            window.location.href = 'admin.html';
+            return;
+        }
+
+        alert('MSSV hoặc mật khẩu không đúng!\n\nDemo credentials:\n- Sinh viên: MSSV 2374802010247, mật khẩu 12345678\n- Admin: MSSV 2374802010247, mật khẩu 123456');
     });
 });
 
