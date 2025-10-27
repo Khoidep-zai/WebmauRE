@@ -1,0 +1,381 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Browser Header */
+.browser-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    height: 40px;
+}
+
+.browser-controls {
+    display: flex;
+    gap: 5px;
+    margin-right: 10px;
+}
+
+.browser-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    font-size: 12px;
+}
+
+.browser-btn:hover {
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.url-bar {
+    flex: 1;
+    background-color: #f0f0f0;
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 13px;
+    color: #333;
+    margin-right: 10px;
+}
+
+.browser-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.browser-icon {
+    font-size: 16px;
+    color: #666;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.user-icon {
+    width: 28px;
+    height: 28px;
+    background-color: #4A90E2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 6px;
+    cursor: pointer;
+}
+
+.user-icon i {
+    margin-left: 3px;
+    font-size: 10px;
+}
+
+/* Container */
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #2C3E50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 30px;
+}
+
+.logo-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 50px;
+}
+
+/* Navigation Menu */
+.nav-menu {
+    flex: 1;
+}
+
+.nav-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-menu li {
+    padding: 15px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+    position: relative;
+}
+
+.nav-menu li:hover {
+    background-color: #34495E;
+}
+
+.nav-menu li.active {
+    background-color: #34495E;
+    border-left: 4px solid #4CAF50;
+}
+
+.nav-menu li i {
+    margin-right: 12px;
+    font-size: 18px;
+    width: 20px;
+}
+
+.nav-menu li span:not(.nav-dot) {
+    font-size: 14px;
+}
+
+.nav-dot {
+    position: absolute;
+    right: 20px;
+    width: 8px;
+    height: 8px;
+    background-color: #ff0000;
+    border-radius: 50%;
+}
+
+/* User Profile */
+.user-profile {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-top: 1px solid #34495E;
+    cursor: pointer;
+}
+
+.user-profile:hover {
+    background-color: #34495E;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    margin-right: 12px;
+}
+
+.avatar-image {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.user-badge {
+    display: inline-block;
+    background-color: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+}
+
+.user-profile i {
+    color: #95a5a6;
+    margin-left: 10px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    background-color: #F5F5F5;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #2C3E50;
+}
+
+/* Classes Section */
+.classes-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.classes-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 15px;
+    background-color: #F8F9FA;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #666;
+}
+
+.class-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 20px;
+    align-items: center;
+    padding: 20px 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.class-item:last-child {
+    border-bottom: none;
+}
+
+.class-info {
+    display: flex;
+    align-items: center;
+}
+
+.class-thumbnail {
+    width: 60px;
+    height: 40px;
+    border-radius: 4px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.class-details {
+    flex: 1;
+}
+
+.class-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2C3E50;
+    margin-bottom: 5px;
+}
+
+.class-instructor {
+    font-size: 13px;
+    color: #666;
+}
+
+.class-sessions,
+.class-students {
+    font-size: 14px;
+    color: #2C3E50;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.live {
+    background-color: #E53E3E;
+    color: white;
+}
+
+.enter-btn {
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.enter-btn:hover {
+    background-color: #2980B9;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.footer p {
+    margin: 5px 0;
+}
+
+.footer-love {
+    margin-top: 10px;
+}
+
+.heart {
+    color: #ff0000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .browser-header {
+        font-size: 12px;
+    }
+    
+    .url-bar {
+        display: none;
+    }
+}
+

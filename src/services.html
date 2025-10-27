@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dịch vụ KTX - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="services.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li onclick="window.location.href='index.html'">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Lớp học</span>
+                    </li>
+                    <li onclick="window.location.href='feed.html'">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li onclick="window.location.href='dorm.html'">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                    </li>
+                    <li class="active">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                        <span class="nav-dot"></span>
+                    </li>
+                    <li onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-concierge-bell"></i>
+                    Dịch vụ KTX
+                </h1>
+                <p class="page-subtitle">Đặt dịch vụ và quản lý yêu cầu</p>
+            </div>
+
+            <!-- Service Selection Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-list"></i>
+                        2. Chọn dịch vụ sử dụng
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="services-grid">
+                        <div class="service-card" onclick="selectService('giặt-ủi')">
+                            <div class="service-icon">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <h3>Giặt ủi</h3>
+                            <p>Từ 30.000đ</p>
+                            <span class="service-badge">Phổ biến</span>
+                        </div>
+
+                        <div class="service-card" onclick="selectService('sửa-chữa')">
+                            <div class="service-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h3>Sửa chữa</h3>
+                            <p>Từ 50.000đ</p>
+                            <span class="service-badge">Hỗ trợ nhanh</span>
+                        </div>
+
+                        <div class="service-card" onclick="selectService('đặt-phòng-khách')">
+                            <div class="service-icon">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                            <h3>Đặt phòng khách</h3>
+                            <p>Từ 100.000đ/đêm</p>
+                            <span class="service-badge">Mới</span>
+                        </div>
+
+                        <div class="service-card" onclick="selectService('gửi-giữ-xe')">
+                            <div class="service-icon">
+                                <i class="fas fa-bicycle"></i>
+                            </div>
+                            <h3>Gửi giữ xe</h3>
+                            <p>Miễn phí</p>
+                            <span class="service-badge">Tiện lợi</span>
+                        </div>
+
+                        <div class="service-card" onclick="selectService('internet')">
+                            <div class="service-icon">
+                                <i class="fas fa-wifi"></i>
+                            </div>
+                            <h3>Internet WiFi</h3>
+                            <p>Từ 100.000đ/tháng</p>
+                            <span class="service-badge">Hot</span>
+                        </div>
+
+                        <div class="service-card" onclick="selectService('vệ-sinh')">
+                            <div class="service-icon">
+                                <i class="fas fa-broom"></i>
+                            </div>
+                            <h3>Vệ sinh phòng</h3>
+                            <p>Từ 40.000đ</p>
+                            <span class="service-badge">Dọn dẹp</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request Form Section -->
+            <div class="card" id="requestFormCard" style="display: none;">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-edit"></i>
+                        3. Mô tả yêu cầu
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="serviceRequestForm">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-tag"></i>
+                                Dịch vụ:
+                            </label>
+                            <div class="selected-service">
+                                <span id="selectedServiceName">-</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">
+                                <i class="fas fa-file-alt"></i>
+                                Mô tả chi tiết:
+                            </label>
+                            <textarea id="description" class="form-control" rows="4" placeholder="Nhập mô tả chi tiết về yêu cầu của bạn..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="desiredTime">
+                                <i class="fas fa-calendar-check"></i>
+                                Thời gian mong muốn:
+                            </label>
+                            <input type="datetime-local" id="desiredTime" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serviceAddress">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Địa điểm:
+                            </label>
+                            <input type="text" id="serviceAddress" class="form-control" placeholder="Ví dụ: Phòng 101, KTX A">
+                        </div>
+
+                        <div class="price-summary">
+                            <div class="price-row">
+                                <span>Giá dịch vụ:</span>
+                                <span id="servicePrice">0đ</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Phí dịch vụ:</span>
+                                <span>5.000đ</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Tổng cộng:</span>
+                                <span id="totalPrice">5.000đ</span>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-secondary" onclick="showPaymentOptions()">
+                            <i class="fas fa-credit-card"></i>
+                            Gửi yêu cầu & Thanh toán
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Payment Options Modal -->
+            <div id="paymentModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Chọn phương thức thanh toán</h2>
+                        <button class="close-btn" onclick="closePaymentModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="payment-methods">
+                            <div class="payment-method" onclick="selectPaymentMethod('wallet')">
+                                <i class="fas fa-wallet"></i>
+                                <span>Ví điện tử</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('card')">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Thẻ tín dụng</span>
+                            </div>
+                            <div class="payment-method" onclick="selectPaymentMethod('transfer')">
+                                <i class="fas fa-university"></i>
+                                <span>Chuyển khoản</span>
+                            </div>
+                        </div>
+
+                        <div id="paymentConfirmation" style="display: none;">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <strong>Thanh toán thành công!</strong>
+                                    <p>Yêu cầu dịch vụ của bạn đã được gửi và đang xử lý.</p>
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="closePaymentModal()">
+                                Hoàn tất
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        4. Lịch sử giao dịch
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div id="historyList">
+                        <!-- History items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="services.js"></script>
+</body>
+</html>
+

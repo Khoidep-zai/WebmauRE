@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký KTX - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dorm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li onclick="window.location.href='index.html'">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Lớp học</span>
+                    </li>
+                    <li onclick="window.location.href='feed.html'">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li class="active">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                        <span class="nav-dot"></span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                    </li>
+                    <li onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-building"></i>
+                    Đăng ký Ký túc xá
+                </h1>
+                <p class="page-subtitle">Quản lý phòng ở và hợp đồng KTX</p>
+            </div>
+
+            <!-- Account Info Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-user-check"></i>
+                        1. Thông tin tài khoản
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-id-card"></i>
+                            MSSV:
+                        </div>
+                        <div class="info-value" id="userMssv">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            Họ và tên:
+                        </div>
+                        <div class="info-value" id="userFullName">-</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            Email VLU:
+                        </div>
+                        <div class="info-value" id="userEmail">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Information Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-door-open"></i>
+                        2. Thông tin phòng hiện tại
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div id="noRoomInfo" class="empty-state">
+                        <i class="fas fa-bed"></i>
+                        <p>Bạn chưa đăng ký phòng KTX</p>
+                        <button class="btn-primary" onclick="showRegisterModal()">
+                            <i class="fas fa-plus-circle"></i>
+                            Đăng ký phòng mới
+                        </button>
+                    </div>
+
+                    <div id="roomInfo" style="display: none;">
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-home"></i>
+                                Số phòng:
+                            </div>
+                            <div class="info-value" id="roomNumber">-</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-users"></i>
+                                Bạn cùng phòng:
+                            </div>
+                            <div class="info-value" id="roommates">-</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-info-circle"></i>
+                                Tình trạng phòng:
+                            </div>
+                            <div class="info-value">
+                                <span class="status-badge" id="roomStatus">-</span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Ngày bắt đầu hợp đồng:
+                            </div>
+                            <div class="info-value" id="contractStartDate">-</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-calendar-times"></i>
+                                Ngày kết thúc hợp đồng:
+                            </div>
+                            <div class="info-value" id="contractEndDate">-</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Số ngày còn lại:
+                            </div>
+                            <div class="info-value" id="daysRemaining">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Renew/Return Section -->
+            <div class="card" id="renewReturnCard" style="display: none;">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-sync-alt"></i>
+                        3. Gia hạn hoặc trả phòng
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="actionType">
+                            <i class="fas fa-tasks"></i>
+                            Chọn hành động:
+                        </label>
+                        <select id="actionType" class="form-control" onchange="toggleReasonField()">
+                            <option value="">-- Chọn hành động --</option>
+                            <option value="renew">Gia hạn phòng</option>
+                            <option value="return">Trả phòng</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="reasonGroup" style="display: none;">
+                        <label for="reason">
+                            <i class="fas fa-edit"></i>
+                            Lý do:
+                        </label>
+                        <textarea id="reason" class="form-control" rows="3" placeholder="Nhập lý do gia hạn hoặc trả phòng"></textarea>
+                    </div>
+
+                    <button id="submitActionBtn" class="btn-primary" onclick="submitAction()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                        Gửi yêu cầu
+                    </button>
+
+                    <div id="confirmationMessage" class="alert alert-success" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Xác nhận từ quản lý:</strong>
+                            <p id="managerConfirmation"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contract Monitor Section -->
+            <div class="card" id="monitorContractCard" style="display: none;">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-file-contract"></i>
+                        4. Theo dõi hợp đồng
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-spinner"></i>
+                            Trạng thái phê duyệt:
+                        </div>
+                        <div class="info-value">
+                            <span class="status-badge" id="approvalStatus">-</span>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-file-pdf"></i>
+                            Hợp đồng hiện tại:
+                        </div>
+                        <div class="info-value">
+                            <button class="btn-secondary" onclick="downloadContract()">
+                                <i class="fas fa-download"></i>
+                                Tải hợp đồng PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Register Room Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đăng ký phòng KTX</h2>
+                <button class="close-btn" onclick="closeRegisterModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Chọn phòng:</label>
+                    <select id="selectRoom" class="form-control">
+                        <option value="">-- Chọn phòng --</option>
+                        <option value="101">Phòng 101 - 4 người</option>
+                        <option value="102">Phòng 102 - 4 người</option>
+                        <option value="201">Phòng 201 - 2 người</option>
+                        <option value="202">Phòng 202 - 2 người</option>
+                        <option value="301">Phòng 301 - 4 người</option>
+                        <option value="302">Phòng 302 - 2 người</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ngày bắt đầu:</label>
+                    <input type="date" id="startDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Số tháng hợp đồng:</label>
+                    <select id="contractMonths" class="form-control">
+                        <option value="3">3 tháng</option>
+                        <option value="6">6 tháng</option>
+                        <option value="12" selected>12 tháng</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="confirmRegisterRoom()">
+                    <i class="fas fa-check"></i>
+                    Xác nhận đăng ký
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dorm.js"></script>
+</body>
+</html>
+

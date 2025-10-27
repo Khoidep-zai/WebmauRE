@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lớp học - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li>
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Quá trình học tập</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-bookmark"></i>
+                        <span>Khóa học</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>Tình trạng khóa học</span>
+                    </li>
+                    <li class="active">
+                        <i class="fas fa-users"></i>
+                        <span>Lớp học</span>
+                        <span class="nav-dot"></span>
+                    </li>
+                    <li onclick="window.location.href='feed.html'">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li onclick="window.location.href='dorm.html'">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                    </li>
+                    <li onclick="window.location.href='login.html'">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Đăng nhập</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-credit-card"></i>
+                        <span>Hỗ trợ học phí</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image">
+                <div class="user-info">
+                    <div class="user-name">Nguyễn Hồng Hoa</div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1 class="page-title">Lớp học</h1>
+            
+            <div class="classes-section">
+                <div class="classes-header">
+                    <div class="header-col">LỚP HỌC</div>
+                    <div class="header-col">SỐ TIẾT</div>
+                    <div class="header-col">SỐ HỌC VIÊN</div>
+                    <div class="header-col">TRẠNG THÁI</div>
+                    <div class="header-col"></div>
+                </div>
+
+                <div class="class-item">
+                    <div class="class-info">
+                        <img src="https://via.placeholder.com/60x40/4A90E2/FFFFFF?text=Class" alt="Class" class="class-thumbnail">
+                        <div class="class-details">
+                            <div class="class-name">VLU-123456_Kỹ năng thuyết trình</div>
+                            <div class="class-instructor">Gv. Nguyễn Tiến Dũng</div>
+                        </div>
+                    </div>
+                    <div class="class-sessions">1/9</div>
+                    <div class="class-students">40</div>
+                    <div class="class-status">
+                        <span class="status-badge live">Đang LIVE</span>
+                    </div>
+                    <div class="class-action">
+                        <button class="enter-btn">Vào lớp</button>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <p>Bản quyền thuộc Van Lang university © 2021.</p>
+                <p class="footer-love">VanLang make with <span class="heart">♥</span></p>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
+

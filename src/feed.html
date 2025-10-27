@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng tin - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="feed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active" onclick="loadFeed()">
+                        <i class="fas fa-home"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li onclick="showCreatePost()">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Tạo bài viết</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-bell"></i>
+                        <span>Thông báo</span>
+                        <span class="nav-dot" id="navNotificationDot"></span>
+                    </li>
+                    <li>
+                        <i class="fas fa-user"></i>
+                        <span>Hồ sơ</span>
+                    </li>
+                    <li onclick="window.location.href='dorm.html'">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                    </li>
+                    <li onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="feed-container">
+                <!-- Create Post Section -->
+                <div class="create-post-section">
+                    <div class="create-post-header">
+                        <div class="user-info-small">
+                            <img src="../logo/cho.jpg" alt="User" class="avatar-small" id="createPostAvatar">
+                            <div class="user-details-small">
+                                <div class="user-name-small" id="createPostName"></div>
+                                <div class="post-type-indicator">Tạo bài viết mới</div>
+                            </div>
+                        </div>
+                        <button class="toggle-create-btn" onclick="showCreatePost()">
+                            <i class="fas fa-edit"></i>
+                            Viết bài
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Post Type Selection (Hidden by default) -->
+                <div class="post-type-selector" id="postTypeSelector" style="display: none;">
+                    <h3>Chọn loại bài viết</h3>
+                    <div class="post-types">
+                        <button class="post-type-btn" onclick="showPostForm('thong-bao')">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Thông báo</span>
+                        </button>
+                        <button class="post-type-btn" onclick="showPostForm('hoi-dap')">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Hỏi đáp</span>
+                        </button>
+                        <button class="post-type-btn" onclick="showPostForm('trao-doi')">
+                            <i class="fas fa-comments"></i>
+                            <span>Trao đổi</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Create Post Form (Hidden by default) -->
+                <div class="create-post-form" id="createPostForm" style="display: none;">
+                    <div class="form-header">
+                        <h3 id="formTitle">Tạo bài viết mới</h3>
+                        <button class="close-btn" onclick="closePostForm()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="postForm">
+                        <div class="form-group">
+                            <label>Tiêu đề</label>
+                            <input type="text" id="postTitle" placeholder="Nhập tiêu đề bài viết" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Nội dung</label>
+                            <textarea id="postContent" rows="5" placeholder="Nhập nội dung bài viết" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Tags (phân cách bằng dấu phẩy)</label>
+                            <input type="text" id="postTags" placeholder="ví dụ: ktx, vanlang, học tập">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Hình ảnh / Đính kèm (tùy chọn)</label>
+                            <input type="file" id="postImage" accept="image/*">
+                            <div class="file-preview" id="filePreview"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Quyền hiển thị</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="postPermission" value="public" checked>
+                                    <span>Công khai</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="postPermission" value="internal">
+                                    <span>Nội bộ KTX</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" onclick="closePostForm()">Hủy</button>
+                            <button type="submit" class="submit-btn">
+                                <i class="fas fa-paper-plane"></i>
+                                Đăng bài
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Feed Posts -->
+                <div class="posts-container" id="postsContainer">
+                    <!-- Posts will be dynamically loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="feed.js"></script>
+</body>
+</html>
+
