@@ -24,9 +24,17 @@
                         <i class="fas fa-concierge-bell"></i>
                         <span>Dịch vụ</span>
                     </li>
+                    <li onclick="window.location.href='feedback.html'">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Phản ánh sự cố</span>
+                    </li>
                     <li class="active" id="adminMenuItem">
                         <i class="fas fa-user-shield"></i>
                         <span>Trang quản trị</span>
+                    </li>
+                    <li id="adminRoomsLink" style="display:none">
+                        <i class="fas fa-building"></i>
+                        <span>Quản lý phòng</span>
                     </li>
                 </ul>
             </nav>
@@ -45,6 +53,12 @@
             <h1 class="page-title">Quản lý yêu cầu dịch vụ</h1>
 
             <div class="admin-actions">
+                <div class="admin-mode">
+                    <button id="showServiceAdminBtn" class="btn btn-toggle active">Quản trị dịch vụ KTX</button>
+                    <button id="showRoomAdminBtn" class="btn btn-toggle">Quản trị phòng</button>
+                    <button id="showFeedbackBtn" class="btn btn-toggle">Quản lý phản ánh</button>
+                    <button id="showReportsBtn" class="btn btn-toggle">Báo cáo & Thống kê</button>
+                </div>
                 <button id="refreshBtn" class="btn" title="Làm mới danh sách">Làm mới</button>
                 <button id="showAllBtn" class="btn">Hiện tất cả</button>
                 <button id="showPendingBtn" class="btn btn-primary">Chỉ chờ duyệt</button>

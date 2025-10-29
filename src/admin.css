@@ -45,6 +45,23 @@
 .btn { padding: 8px 10px; border-radius: 6px; border: 1px solid #ccc; background: #f7f7f7; cursor: pointer; }
 .btn-primary { background:#007bff; color:white; border-color: #007bff; }
 .btn-danger { background:#dc3545; color:white; border-color: #dc3545; }
+/* admin mode toggle buttons */
+.admin-mode { display: inline-flex; gap: 6px; align-items: center; }
+.btn-toggle { background: #f0f0f0; border: 1px solid #ccc; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+.btn-toggle.active { background: #c82333; color: white; border-color: #bd2130; }
+
+/* Reports styles */
+.reports-summary { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+.report-card { background: #fff; padding:12px; border-radius:8px; border:1px solid #e6e6e6; min-width:160px; flex:1 1 160px; }
+.report-card h3 { margin:0 0 6px 0; font-size:16px; }
+.report-card .value { font-size:20px; font-weight:700; color:#333; }
+.chart-area { background:#fff; padding:12px; border-radius:8px; border:1px solid #e6e6e6; }
+.bar-chart { display:flex; align-items:flex-end; gap:8px; height:140px; padding:8px; }
+.bar { width:28px; background:#007bff; border-radius:4px 4px 0 0; display:flex; align-items:flex-end; justify-content:center; color:#fff; font-size:12px; }
+.chart-labels { display:flex; gap:8px; margin-top:8px; justify-content:center; }
+.chart-labels span { font-size:12px; color:#555; }
+.services-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.services-table th, .services-table td { border:1px solid #eaeaea; padding:8px; text-align:left; }
 .status-badge { padding: 6px 8px; border-radius: 6px; font-weight: 600; }
 .status-pending { background: #fff3cd; color: #856404; }
 .status-processing { background: #cce5ff; color: #004085; }

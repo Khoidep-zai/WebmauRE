@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('user', JSON.stringify(user));
         setAdminUserInfo(user);
         initButtons();
+        // default to service admin view
+        adminMode = 'services';
+        lastFilter = 'pending';
         loadRequests('pending');
         return;
     }
@@ -39,18 +42,94 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'login.html';
 });
 
+let adminMode = 'services';
+let lastFilter = 'all';
+
 function initButtons() {
-    document.getElementById('refreshBtn').addEventListener('click', loadRequests);
-    document.getElementById('showAllBtn').addEventListener('click', () => loadRequests('all'));
-    document.getElementById('showPendingBtn').addEventListener('click', () => loadRequests('pending'));
-    document.getElementById('exportBtn').addEventListener('click', exportJSON);
+    const refreshBtn = document.getElementById('refreshBtn');
+    const showAllBtn = document.getElementById('showAllBtn');
+    const showPendingBtn = document.getElementById('showPendingBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const svcBtn = document.getElementById('showServiceAdminBtn');
+    const roomBtn = document.getElementById('showRoomAdminBtn');
+    const reportsBtn = document.getElementById('showReportsBtn');
+    const feedbackBtn = document.getElementById('showFeedbackBtn');
+
+    if (refreshBtn) refreshBtn.addEventListener('click', () => loadRequests(lastFilter));
+    
+    if (feedbackBtn) feedbackBtn.addEventListener('click', () => {
+        adminMode = 'feedback';
+        feedbackBtn.classList.add('active');
+        if (svcBtn) svcBtn.classList.remove('active');
+        if (roomBtn) roomBtn.classList.remove('active');
+        if (reportsBtn) reportsBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Quản lý phản ánh sự cố';
+        loadFeedback();
+    });
+    if (showAllBtn) showAllBtn.addEventListener('click', () => { lastFilter = 'all'; loadRequests('all'); });
+    if (showPendingBtn) showPendingBtn.addEventListener('click', () => { lastFilter = 'pending'; loadRequests('pending'); });
+    if (exportBtn) exportBtn.addEventListener('click', exportJSON);
+
+    if (svcBtn) svcBtn.addEventListener('click', () => {
+        adminMode = 'services';
+        svcBtn.classList.add('active');
+        if (roomBtn) roomBtn.classList.remove('active');
+        if (reportsBtn) reportsBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Quản lý yêu cầu dịch vụ';
+        loadRequests(lastFilter);
+    });
+    if (roomBtn) roomBtn.addEventListener('click', () => {
+        adminMode = 'rooms';
+        roomBtn.classList.add('active');
+        if (svcBtn) svcBtn.classList.remove('active');
+        if (reportsBtn) reportsBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Quản lý đơn chuyển/trả phòng';
+        loadRequests(lastFilter);
+    });
+    if (reportsBtn) reportsBtn.addEventListener('click', () => {
+        adminMode = 'reports';
+        reportsBtn.classList.add('active');
+        if (svcBtn) svcBtn.classList.remove('active');
+        if (roomBtn) roomBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Báo cáo & Thống kê';
+        loadRequests(lastFilter);
+    });
+
+    // ensure initial active state reflects adminMode
+    try {
+        if (adminMode === 'rooms') {
+            if (roomBtn) roomBtn.classList.add('active');
+            if (svcBtn) svcBtn.classList.remove('active');
+            if (reportsBtn) reportsBtn.classList.remove('active');
+            const title = document.querySelector('.page-title'); if (title) title.textContent = 'Quản lý đơn chuyển/trả phòng';
+        } else {
+            if (svcBtn) svcBtn.classList.add('active');
+            if (roomBtn) roomBtn.classList.remove('active');
+            if (reportsBtn) reportsBtn.classList.remove('active');
+            const title = document.querySelector('.page-title'); if (title) title.textContent = 'Quản lý yêu cầu dịch vụ';
+        }
+    } catch (e) {
+        // ignore
+    }
 }
 
 function loadRequests(filter = 'all') {
     const container = document.getElementById('requestsContainer');
+    // If in reports mode, render reports instead
+    if (adminMode === 'reports') {
+        renderReports();
+        return;
+    }
     const raw = localStorage.getItem('serviceHistory') || '[]';
     let list = [];
     try { list = JSON.parse(raw); } catch(e) { list = []; }
+
+    // Filter by admin mode: service vs room requests
+    if (adminMode === 'rooms') {
+        list = list.filter(r => r.service === 'room-action' || (r.type && ['renew','return','transfer'].includes(r.type)));
+    } else {
+        list = list.filter(r => !(r.service === 'room-action' || (r.type && ['renew','return','transfer'].includes(r.type))));
+    }
 
     if (filter === 'pending') {
         list = list.filter(r => r.status === 'pending');
@@ -111,11 +190,22 @@ function createRequestCard(req) {
     btnView.textContent = 'Xem JSON';
     btnView.onclick = () => alert(JSON.stringify(req, null, 2));
 
+    // If this is a room-related request, show a dedicated approve-and-assign button
+    let btnAssign = null;
+    const isRoomRequest = (req.service === 'room-action') || (req.type && ['renew','return','transfer'].includes(req.type));
+    if (isRoomRequest) {
+        btnAssign = document.createElement('button');
+        btnAssign.className = 'btn btn-success';
+        btnAssign.textContent = 'Phê duyệt & Gán phòng';
+        btnAssign.onclick = () => approveRoomRequest(req.id);
+    }
+
     actions.appendChild(statusSpan);
     actions.appendChild(btnProcessing);
     actions.appendChild(btnComplete);
     actions.appendChild(btnCancel);
     actions.appendChild(btnView);
+    if (btnAssign) actions.appendChild(btnAssign);
 
     div.appendChild(info);
     div.appendChild(actions);
@@ -136,6 +226,147 @@ function updateStatus(id, newStatus) {
     list[idx].adminUpdatedAt = new Date().toISOString();
 
     localStorage.setItem('serviceHistory', JSON.stringify(list));
+
+    // Create a notification for the request author if available
+    try {
+        const notifRaw = localStorage.getItem('notifications') || '[]';
+        const notifs = JSON.parse(notifRaw);
+        const req = list[idx];
+        const recipient = req.authorEmail || null;
+        const message = `Yêu cầu dịch vụ "${req.serviceName || req.service}" của bạn đã được cập nhật: ${newStatus}`;
+        const notification = {
+            id: Date.now(),
+            recipientEmail: recipient,
+            message: message,
+            relatedRequestId: req.id,
+            time: new Date().toISOString(),
+            read: false
+        };
+        // push to front
+        notifs.unshift(notification);
+        // keep recent 200
+        if (notifs.length > 200) notifs.splice(200);
+        localStorage.setItem('notifications', JSON.stringify(notifs));
+    } catch (e) {
+        console.error('Could not write notification', e);
+    }
+
+    loadRequests('all');
+}
+
+// Approve room-action request and assign an available room
+function approveRoomRequest(id) {
+    const raw = localStorage.getItem('serviceHistory') || '[]';
+    let list = [];
+    try { list = JSON.parse(raw); } catch(e) { list = []; }
+
+    const idx = list.findIndex(r => r.id === id || String(r.id) === String(id));
+    if (idx === -1) { alert('Yêu cầu không tìm thấy.'); return; }
+
+    const req = list[idx];
+    // Load global room list
+    const roomsRaw = localStorage.getItem('roomList') || '[]';
+    let rooms = [];
+    try { rooms = JSON.parse(roomsRaw); } catch(e) { rooms = []; }
+
+    const available = rooms.filter(r => r.status === 'available');
+    if (available.length === 0) {
+        alert('Không có phòng trống để gán. Vui lòng thêm phòng hoặc giải phóng phòng trước.');
+        return;
+    }
+
+    // If student requested a specific room, prefer it if available
+    const preferred = req.desiredRoom || null;
+    let target = null;
+    if (preferred) {
+        const prefRoom = rooms.find(r => r.code === preferred);
+        if (prefRoom && prefRoom.status === 'available') {
+            const ok = confirm('Sinh viên yêu cầu chuyển tới ' + preferred + '. Bạn có muốn gán phòng này không?');
+            if (ok) target = prefRoom;
+        } else {
+            // preferred not available
+            alert('Phòng yêu cầu (' + preferred + ') hiện không trống. Vui lòng chọn phòng khác.');
+        }
+    }
+
+    if (!target) {
+        const options = available.map(r => r.code).join(', ');
+        const selectedCode = prompt('Phòng trống: ' + options + '\nNhập mã phòng để gán cho sinh viên:');
+        if (!selectedCode) return;
+        target = rooms.find(r => r.code === selectedCode);
+        if (!target || target.status !== 'available') {
+            alert('Mã phòng không hợp lệ hoặc không còn trống.');
+            return;
+        }
+    }
+
+    // Mark target room occupied and record occupant
+    target.status = 'occupied';
+    target.occupantName = req.author || null;
+    target.occupantEmail = req.authorEmail || null;
+
+    // Optionally, free previous room if any in global assignments
+    const assignmentsRaw = localStorage.getItem('roomAssignments') || '[]';
+    let assignments = [];
+    try { assignments = JSON.parse(assignmentsRaw); } catch(e) { assignments = []; }
+
+    // Find existing assignment for this user and free previous room
+    const existing = assignments.find(a => a.email === req.authorEmail);
+    if (existing && existing.roomNumber) {
+        const prev = rooms.find(r => r.code === existing.roomNumber);
+        if (prev) {
+            prev.status = 'available';
+            prev.occupantName = null;
+            prev.occupantEmail = null;
+        }
+    }
+
+    // Upsert assignment for this user
+    const newAssign = {
+        email: req.authorEmail || null,
+        name: req.author || null,
+        roomNumber: target.code,
+        assignedAt: new Date().toISOString()
+    };
+    if (existing) {
+        existing.roomNumber = newAssign.roomNumber;
+        existing.assignedAt = newAssign.assignedAt;
+    } else {
+        assignments.unshift(newAssign);
+    }
+
+    // Persist rooms and assignments
+    localStorage.setItem('roomList', JSON.stringify(rooms));
+    localStorage.setItem('roomAssignments', JSON.stringify(assignments));
+
+    // Update request status and record assignment
+    list[idx].status = 'completed';
+    list[idx].adminUpdatedAt = new Date().toISOString();
+    list[idx].assignedRoom = target.code;
+    localStorage.setItem('serviceHistory', JSON.stringify(list));
+
+    // Create notification to inform student
+    try {
+        const notifRaw = localStorage.getItem('notifications') || '[]';
+        const notifs = JSON.parse(notifRaw);
+        const recipient = req.authorEmail || null;
+        const message = `Yêu cầu phòng của bạn đã được phê duyệt. Phòng mới: ${target.code}`;
+        const notification = {
+            id: Date.now(),
+            recipientEmail: recipient,
+            message: message,
+            relatedRequestId: req.id,
+            time: new Date().toISOString(),
+            read: false
+        };
+        notifs.unshift(notification);
+        if (notifs.length > 200) notifs.splice(200);
+        localStorage.setItem('notifications', JSON.stringify(notifs));
+    } catch (e) {
+        console.error('Could not write notification', e);
+    }
+
+    alert('Đã gán phòng ' + target.code + ' cho ' + (req.author || 'sinh viên') + '.');
     loadRequests('all');
 }
 
@@ -150,6 +381,175 @@ function exportJSON() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+}
+
+// ---------- Reports rendering ----------
+function renderReports() {
+    const container = document.getElementById('requestsContainer');
+    const raw = localStorage.getItem('serviceHistory') || '[]';
+    let list = [];
+    try { list = JSON.parse(raw); } catch(e) { list = []; }
+
+    const roomsRaw = localStorage.getItem('roomList') || '[]';
+    let rooms = [];
+    try { rooms = JSON.parse(roomsRaw); } catch(e) { rooms = []; }
+
+    // Metrics
+    const totalRequests = list.length;
+    const pending = list.filter(r => r.status === 'pending').length;
+    const completed = list.filter(r => r.status === 'completed').length;
+    const uniqueEmails = Array.from(new Set(list.map(r => r.authorEmail).filter(Boolean)));
+    const totalStudents = uniqueEmails.length;
+
+    const roomCounts = { available:0, occupied:0, maintenance:0 };
+    rooms.forEach(r => { if (r.status === 'available') roomCounts.available++; else if (r.status === 'occupied') roomCounts.occupied++; else if (r.status === 'maintenance') roomCounts.maintenance++; });
+
+    // Service counts
+    const serviceCounts = {};
+    list.forEach(r => {
+        const key = r.serviceName || r.service || 'unknown';
+        serviceCounts[key] = (serviceCounts[key] || 0) + 1;
+    });
+
+    // Monthly counts (last 6 months)
+    const months = [];
+    const now = new Date();
+    for (let i=5;i>=0;i--) {
+        const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+        const label = d.toLocaleString('vi-VN', { month: 'short', year: 'numeric' });
+        months.push({ label, year: d.getFullYear(), month: d.getMonth(), count: 0 });
+    }
+    list.forEach(r => {
+        const d = new Date(r.date);
+        months.forEach(m => { if (d.getFullYear() === m.year && d.getMonth() === m.month) m.count++; });
+    });
+
+    // Build HTML
+    container.innerHTML = '';
+    const summary = document.createElement('div'); summary.className = 'reports-summary';
+    const cards = [
+        { title: 'Tổng yêu cầu', value: totalRequests },
+        { title: 'Chờ duyệt', value: pending },
+        { title: 'Hoàn thành', value: completed },
+        { title: 'Sinh viên', value: totalStudents },
+        { title: 'Phòng trống', value: roomCounts.available },
+        { title: 'Phòng có người', value: roomCounts.occupied }
+    ];
+    cards.forEach(c => {
+        const card = document.createElement('div'); card.className = 'report-card';
+        card.innerHTML = `<h3>${c.title}</h3><div class="value">${c.value}</div>`;
+        summary.appendChild(card);
+    });
+    container.appendChild(summary);
+
+    // Chart area
+    // Add feedback statistics
+    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    const feedbackStats = {
+        total: feedbacks.length,
+        pending: feedbacks.filter(f => f.status === 'pending').length,
+        resolved: feedbacks.filter(f => f.status === 'resolved').length,
+        byType: {},
+        byPriority: {
+            low: 0,
+            medium: 0,
+            high: 0
+        }
+    };
+
+    feedbacks.forEach(f => {
+        feedbackStats.byType[f.issueType] = (feedbackStats.byType[f.issueType] || 0) + 1;
+        feedbackStats.byPriority[f.priority] = (feedbackStats.byPriority[f.priority] || 0) + 1;
+    });
+
+    // Add feedback stats cards
+    const feedbackSummary = document.createElement('div');
+    feedbackSummary.className = 'reports-summary';
+    feedbackSummary.innerHTML = `
+        <h3>Thống kê phản ánh sự cố</h3>
+        <div class="report-cards">
+            <div class="report-card">
+                <h4>Tổng số phản ánh</h4>
+                <div class="value">${feedbackStats.total}</div>
+            </div>
+            <div class="report-card">
+                <h4>Đang xử lý</h4>
+                <div class="value">${feedbackStats.pending}</div>
+            </div>
+            <div class="report-card">
+                <h4>Đã giải quyết</h4>
+                <div class="value">${feedbackStats.resolved}</div>
+            </div>
+        </div>
+        <div class="feedback-type-stats">
+            <h4>Phân loại sự cố</h4>
+            ${Object.entries(feedbackStats.byType).map(([type, count]) => `
+                <div class="stat-row">
+                    <span>${escapeHtml(type)}</span>
+                    <span>${count}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div class="feedback-priority-stats">
+            <h4>Phân loại mức độ ưu tiên</h4>
+            ${Object.entries(feedbackStats.byPriority).map(([priority, count]) => `
+                <div class="stat-row">
+                    <span>${escapeHtml(priority)}</span>
+                    <span>${count}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    container.appendChild(feedbackSummary);
+
+    const chartWrap = document.createElement('div'); chartWrap.className = 'chart-area';
+    chartWrap.innerHTML = `<h3>Yêu cầu theo tháng (6 tháng)</h3>`;
+    const barChart = document.createElement('div'); barChart.className = 'bar-chart';
+    const max = Math.max(1, ...months.map(m=>m.count));
+    months.forEach(m => {
+        const h = Math.round((m.count / max) * 100);
+        const bar = document.createElement('div'); bar.className = 'bar'; bar.style.height = (h + '%'); bar.title = `${m.label}: ${m.count}`;
+        bar.textContent = m.count > 0 ? m.count : '';
+        barChart.appendChild(bar);
+    });
+    chartWrap.appendChild(barChart);
+    const labels = document.createElement('div'); labels.className = 'chart-labels';
+    months.forEach(m => { const s = document.createElement('span'); s.textContent = m.label.split(' ')[0]; labels.appendChild(s); });
+    chartWrap.appendChild(labels);
+    container.appendChild(chartWrap);
+
+    // Services table
+    const svcDiv = document.createElement('div'); svcDiv.className = 'chart-area';
+    svcDiv.innerHTML = '<h3>Số lượng theo dịch vụ</h3>';
+    const table = document.createElement('table'); table.className = 'services-table';
+    table.innerHTML = '<thead><tr><th>Dịch vụ</th><th>Số lượng</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    Object.keys(serviceCounts).sort((a,b)=>serviceCounts[b]-serviceCounts[a]).forEach(k=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(k)}</td><td>${serviceCounts[k]}</td>`;
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    svcDiv.appendChild(table);
+
+    // Export report button
+    const exportBtn = document.createElement('button'); exportBtn.className = 'btn'; exportBtn.textContent = 'Xuất báo cáo (JSON)';
+    exportBtn.addEventListener('click', exportReports);
+    svcDiv.appendChild(exportBtn);
+
+    container.appendChild(svcDiv);
+}
+
+function exportReports() {
+    const data = {
+        serviceHistory: JSON.parse(localStorage.getItem('serviceHistory') || '[]'),
+        roomList: JSON.parse(localStorage.getItem('roomList') || '[]'),
+        roomAssignments: JSON.parse(localStorage.getItem('roomAssignments') || '[]'),
+        generatedAt: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'maubao_cao_' + new Date().toISOString().slice(0,10) + '.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
 // Helpers
@@ -195,4 +595,126 @@ function setAdminUserInfo(user) {
     } catch (e) {
         // ignore
     }
+}
+
+// Feedback management functions
+function loadFeedback() {
+    const container = document.getElementById('requestsContainer');
+    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    
+    if (feedbacks.length === 0) {
+        container.innerHTML = `<div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>Chưa có phản ánh nào.</p>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    feedbacks.forEach(feedback => {
+        const card = createFeedbackCard(feedback);
+        container.appendChild(card);
+    });
+}
+
+function createFeedbackCard(feedback) {
+    const div = document.createElement('div');
+    div.className = 'feedback-card request-card';
+
+    const info = document.createElement('div');
+    info.className = 'feedback-info request-info';
+    
+    const priorityClass = {
+        low: 'priority-low',
+        medium: 'priority-medium',
+        high: 'priority-high'
+    }[feedback.priority] || '';
+
+    info.innerHTML = `
+        <div class="request-meta">
+            <span class="small">ID: ${feedback.id}</span> • 
+            <span class="small">Ngày: ${formatDateTime(feedback.createdAt)}</span> •
+            <span class="priority-badge ${priorityClass}">Mức độ: ${feedback.priority}</span>
+        </div>
+        <div class="request-title">
+            <strong>${escapeHtml(feedback.userName)} - Phòng ${escapeHtml(feedback.room)}</strong>
+        </div>
+        <div class="request-subtitle">
+            <strong>Loại sự cố: ${escapeHtml(feedback.issueType)}</strong>
+        </div>
+        <div class="request-body">
+            ${escapeHtml(feedback.description)}
+        </div>
+        ${feedback.updates.map(update => `
+            <div class="feedback-update">
+                <strong>${formatDateTime(update.time)}:</strong> ${escapeHtml(update.message)}
+            </div>
+        `).join('')}
+    `;
+
+    const actions = document.createElement('div');
+    actions.className = 'request-actions';
+
+    const statusBadge = document.createElement('span');
+    statusBadge.className = `status-badge ${statusClass(feedback.status)}`;
+    statusBadge.textContent = feedback.status;
+    actions.appendChild(statusBadge);
+
+    const updateBtn = document.createElement('button');
+    updateBtn.className = 'btn';
+    updateBtn.textContent = 'Cập nhật trạng thái';
+    updateBtn.onclick = () => updateFeedbackStatus(feedback);
+    actions.appendChild(updateBtn);
+
+    const resolveBtn = document.createElement('button');
+    resolveBtn.className = 'btn btn-primary';
+    resolveBtn.textContent = 'Đánh dấu đã xử lý';
+    resolveBtn.onclick = () => resolveFeedback(feedback.id);
+    if (feedback.status === 'resolved') resolveBtn.disabled = true;
+    actions.appendChild(resolveBtn);
+
+    div.appendChild(info);
+    div.appendChild(actions);
+
+    return div;
+}
+
+function updateFeedbackStatus(feedback) {
+    const message = prompt('Nhập cập nhật mới:');
+    if (!message) return;
+
+    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    const index = feedbacks.findIndex(f => f.id === feedback.id);
+    
+    if (index === -1) {
+        alert('Không tìm thấy phản ánh!');
+        return;
+    }
+
+    feedbacks[index].updates.push({
+        time: new Date().toISOString(),
+        message: message
+    });
+
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    loadFeedback();
+}
+
+function resolveFeedback(id) {
+    const feedbacks = JSON.parse(localStorage.getItem('feedbacks') || '[]');
+    const index = feedbacks.findIndex(f => f.id === id);
+    
+    if (index === -1) {
+        alert('Không tìm thấy phản ánh!');
+        return;
+    }
+
+    feedbacks[index].status = 'resolved';
+    feedbacks[index].updates.push({
+        time: new Date().toISOString(),
+        message: 'Sự cố đã được xử lý'
+    });
+
+    localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
+    loadFeedback();
 }

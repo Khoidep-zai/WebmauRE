@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thông báo - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="feed.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notifications-list { display:flex; flex-direction:column; gap:12px; }
+        .notification-item { background:#fff; padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:12px; border:1px solid #e8e8e8; }
+        .notification-item.unread { border-left:4px solid #007bff; }
+        .notification-body { flex:1; }
+        .notification-time { color:#888; font-size:12px; }
+        .notif-actions { display:flex; gap:8px; }
+        .btn { padding:6px 8px; border-radius:6px; border:1px solid #ccc; background:#f7f7f7; cursor:pointer }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li onclick="window.location.href='feed.html'">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li onclick="window.location.href='dorm.html'">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                    </li>
+                    <li class="active">
+                        <i class="fas fa-bell"></i>
+                        <span>Thông báo</span>
+                        <span class="nav-dot" id="navNotificationDot"></span>
+                    </li>
+                    <li id="adminLink" style="display:none">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Trang quản trị</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">Thông báo</h1>
+
+            <div class="admin-actions" style="margin-bottom:16px;">
+                <button id="markAllRead" class="btn">Đánh dấu đã đọc</button>
+                <button id="clearAll" class="btn">Xóa tất cả</button>
+                <button id="composeBtn" class="btn btn-primary">Gửi phản hồi tới Admin</button>
+            </div>
+
+            <div id="notificationsContainer" class="notifications-list">
+                <!-- Notification items -->
+            </div>
+
+            <!-- Compose modal -->
+            <div id="composeModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Gửi phản hồi tới Admin</h2>
+                        <button class="close-btn" id="closeCompose">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Nội dung</label>
+                            <textarea id="composeText" rows="5" class="form-control"></textarea>
+                        </div>
+                        <div style="margin-top:10px; text-align:right;">
+                            <button class="btn" id="sendCompose">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="admin-helper.js"></script>
+    <script src="notifications.js"></script>
+</body>
+</html>

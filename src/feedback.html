@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phản ánh sự cố - VanLang</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="feedback.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+            </div>
+            
+            <nav class="nav-menu">
+                <ul>
+                    <li onclick="window.location.href='feed.html'">
+                        <i class="fas fa-newspaper"></i>
+                        <span>Bảng tin</span>
+                    </li>
+                    <li id="adminLink" style="display:none">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Trang quản trị</span>
+                    </li>
+                    <li onclick="window.location.href='dorm.html'">
+                        <i class="fas fa-bed"></i>
+                        <span>Đăng ký KTX</span>
+                    </li>
+                    <li onclick="window.location.href='services.html'">
+                        <i class="fas fa-concierge-bell"></i>
+                        <span>Dịch vụ KTX</span>
+                    </li>
+                    <li class="active">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Phản ánh sự cố</span>
+                        <span class="nav-dot"></span>
+                    </li>
+                    <li onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <span class="user-badge">Sinh viên</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Phản ánh sự cố
+                </h1>
+                <p class="page-subtitle">Gửi phản ánh về sự cố trong KTX</p>
+            </div>
+
+            <!-- New Feedback Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-plus-circle"></i>
+                        Gửi phản ánh mới
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="feedbackForm" class="feedback-form">
+                        <div class="form-group">
+                            <label for="issueType">
+                                <i class="fas fa-tags"></i>
+                                Loại sự cố:
+                            </label>
+                            <select id="issueType" required>
+                                <option value="">Chọn loại sự cố</option>
+                                <option value="water">Nước</option>
+                                <option value="electricity">Điện</option>
+                                <option value="facility">Cơ sở vật chất</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">
+                                <i class="fas fa-edit"></i>
+                                Mô tả chi tiết:
+                            </label>
+                            <textarea id="description" rows="4" required placeholder="Mô tả chi tiết về sự cố bạn gặp phải..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="priority">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Mức độ ưu tiên:
+                            </label>
+                            <select id="priority" required>
+                                <option value="low">Thấp</option>
+                                <option value="medium">Trung bình</option>
+                                <option value="high">Cao</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Gửi phản ánh
+                        </button>
+                    </form>
+                    <div id="feedbackStatus" class="feedback-status"></div>
+                </div>
+            </div>
+
+            <!-- Feedback History -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        Lịch sử phản ánh
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div id="feedbackHistory" class="feedback-history">
+                        <!-- Feedback history will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="feedback.js"></script>
+</body>
+</html>

@@ -23,8 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user && user.isAdmin) {
             adminLink.style.display = 'flex';
             adminLink.addEventListener('click', () => { window.location.href = 'admin.html'; });
+            // also show rooms management link if present
+            const adminRoomsLink = document.getElementById('adminRoomsLink');
+            if (adminRoomsLink) {
+                adminRoomsLink.style.display = 'flex';
+                adminRoomsLink.addEventListener('click', () => { window.location.href = 'admin-rooms.html'; });
+            }
         } else {
             adminLink.style.display = 'none';
         }
+    }
+
+    // Update notification dot if unread notifications exist for current user
+    try {
+        const rawNotifs = localStorage.getItem('notifications') || '[]';
+        const notifs = JSON.parse(rawNotifs);
+        const unreadCount = notifs.filter(n => !n.read && (!n.recipientEmail || (user && n.recipientEmail === user.email))).length;
+        const navDot = document.getElementById('navNotificationDot');
+        if (navDot) {
+            navDot.style.display = unreadCount > 0 ? 'block' : 'none';
+        }
+    } catch (e) {
+        // ignore
     }
 });

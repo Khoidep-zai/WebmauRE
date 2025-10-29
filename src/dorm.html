@@ -36,6 +36,10 @@
                         <i class="fas fa-concierge-bell"></i>
                         <span>Dịch vụ KTX</span>
                     </li>
+                    <li onclick="window.location.href='feedback.html'">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Phản ánh sự cố</span>
+                    </li>
                     <li onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Đăng xuất</span>
@@ -181,6 +185,7 @@
                             <option value="">-- Chọn hành động --</option>
                             <option value="renew">Gia hạn phòng</option>
                             <option value="return">Trả phòng</option>
+                            <option value="transfer">Xin chuyển phòng</option>
                         </select>
                     </div>
 
@@ -190,6 +195,15 @@
                             Lý do:
                         </label>
                         <textarea id="reason" class="form-control" rows="3" placeholder="Nhập lý do gia hạn hoặc trả phòng"></textarea>
+                    </div>
+
+                    <div class="form-group" id="desiredRoomGroup" style="display: none;">
+                        <label for="desiredRoom">
+                            <i class="fas fa-exchange-alt"></i>
+                            Phòng muốn chuyển tới (mã phòng):
+                        </label>
+                        <input type="text" id="desiredRoom" class="form-control" placeholder="Ví dụ: A101">
+                        <small class="muted">Bạn có thể nhập mã phòng mong muốn. Quản trị viên sẽ xác nhận và gán phòng nếu có thể.</small>
                     </div>
 
                     <button id="submitActionBtn" class="btn-primary" onclick="submitAction()" disabled>

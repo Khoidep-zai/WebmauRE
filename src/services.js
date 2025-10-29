@@ -168,7 +168,10 @@ function processPayment(method) {
         status: 'pending',
         date: new Date().toISOString(),
         rating: null,
-        completed: false
+        completed: false,
+        // include requester info so admin can notify
+        author: currentUser ? currentUser.name : 'Khách',
+        authorEmail: currentUser ? currentUser.email : null
     };
     
     // Add to history

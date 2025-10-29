@@ -31,6 +31,30 @@ function loadUserInfo() {
 
 // Load room data
 function loadRoomData() {
+    // If there's a global assignment created by admin, use it to populate local roomData
+    try {
+        const assignsRaw = localStorage.getItem('roomAssignments') || '[]';
+        const assigns = JSON.parse(assignsRaw);
+        if (currentUser && assigns && assigns.length) {
+            const mine = assigns.find(a => a.email === currentUser.email);
+            if (mine && !roomData) {
+                // create a basic roomData record from assignment
+                roomData = {
+                    roomNumber: mine.roomNumber,
+                    startDate: new Date().toISOString().split('T')[0],
+                    endDate: new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split('T')[0],
+                    months: 6,
+                    status: 'active',
+                    roommates: [mine.name || currentUser.name],
+                    actionHistory: []
+                };
+                localStorage.setItem('roomData', JSON.stringify(roomData));
+            }
+        }
+    } catch (e) {
+        console.error('Không thể đọc roomAssignments', e);
+    }
+
     if (!roomData) {
         // No room registered
         document.getElementById('noRoomInfo').style.display = 'block';
@@ -170,12 +194,17 @@ function toggleReasonField() {
     const actionType = document.getElementById('actionType').value;
     const reasonGroup = document.getElementById('reasonGroup');
     const submitBtn = document.getElementById('submitActionBtn');
+    const desiredGroup = document.getElementById('desiredRoomGroup');
     
     if (actionType) {
         reasonGroup.style.display = 'block';
+        // if transfer, show desired room input
+        if (actionType === 'transfer' && desiredGroup) desiredGroup.style.display = 'block';
+        else if (desiredGroup) desiredGroup.style.display = 'none';
         submitBtn.disabled = false;
     } else {
         reasonGroup.style.display = 'none';
+        if (desiredGroup) desiredGroup.style.display = 'none';
         submitBtn.disabled = true;
     }
 }
@@ -184,9 +213,15 @@ function toggleReasonField() {
 function submitAction() {
     const actionType = document.getElementById('actionType').value;
     const reason = document.getElementById('reason').value.trim();
+    const desiredRoomInput = document.getElementById('desiredRoom');
+    const desiredRoom = desiredRoomInput ? desiredRoomInput.value.trim() : null;
     
     if (!reason) {
         alert('Vui lòng nhập lý do!');
+        return;
+    }
+    if (actionType === 'transfer' && !desiredRoom) {
+        alert('Vui lòng nhập mã phòng bạn muốn chuyển tới.');
         return;
     }
     
@@ -194,6 +229,7 @@ function submitAction() {
     const action = {
         type: actionType,
         reason: reason,
+        desiredRoom: desiredRoom || null,
         date: new Date().toISOString(),
         status: 'pending'
     };
@@ -206,6 +242,29 @@ function submitAction() {
     
     // Save to localStorage
     localStorage.setItem('roomData', JSON.stringify(roomData));
+
+    // Also create a serviceHistory entry so admin can review this request centrally
+    try {
+        const raw = localStorage.getItem('serviceHistory') || '[]';
+        const serviceHistory = JSON.parse(raw);
+        const serviceEntry = {
+            id: Date.now(),
+            service: 'room-action',
+            serviceName: actionType === 'renew' ? 'Yêu cầu gia hạn phòng' : actionType === 'return' ? 'Yêu cầu trả phòng' : 'Yêu cầu phòng',
+            type: actionType,
+            description: reason,
+            currentRoom: roomData ? roomData.roomNumber : null,
+            desiredRoom: actionType === 'transfer' ? (desiredRoom || null) : null,
+            status: 'pending',
+            date: new Date().toISOString(),
+            author: currentUser ? currentUser.name : 'Khách',
+            authorEmail: currentUser ? currentUser.email : null
+        };
+        serviceHistory.unshift(serviceEntry);
+        localStorage.setItem('serviceHistory', JSON.stringify(serviceHistory));
+    } catch (e) {
+        console.error('Không thể ghi yêu cầu phòng vào lịch sử dịch vụ', e);
+    }
     
     // Show confirmation message
     const confirmationMessage = document.getElementById('confirmationMessage');
@@ -227,6 +286,8 @@ function submitAction() {
     // Reset form
     document.getElementById('actionType').value = '';
     document.getElementById('reason').value = '';
+    const desiredRoomInput2 = document.getElementById('desiredRoom');
+    if (desiredRoomInput2) desiredRoomInput2.value = '';
     toggleReasonField();
 }
 

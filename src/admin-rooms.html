@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý phòng - Admin</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .rooms-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px }
+    .rooms-table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden }
+    .rooms-table th, .rooms-table td { padding:12px 10px; border-bottom:1px solid #eee; text-align:left }
+    .rooms-actions { display:flex; gap:8px }
+    .modal-content .form-group { margin-bottom:10px }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="../logo/vanlang.png" alt="VanLang" class="logo-image">
+      </div>
+      <nav class="nav-menu">
+        <ul>
+          <li onclick="window.location.href='admin.html'">
+            <i class="fas fa-arrow-left"></i>
+            <span>Quay về Admin</span>
+          </li>
+          <li id="adminRoomsLinkSide" class="active">
+            <i class="fas fa-building"></i>
+            <span>Quản lý phòng</span>
+          </li>
+        </ul>
+      </nav>
+      <div class="user-profile">
+        <img src="../logo/cho.jpg" alt="User" class="avatar-image" id="userAvatar">
+        <div class="user-info">
+          <div class="user-name" id="userName">Quản trị viên</div>
+          <span class="user-badge">Admin</span>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <h1 class="page-title">UA1 — Quản lý thông tin phòng KTX</h1>
+
+      <div class="rooms-header">
+        <div>
+          <button id="addRoomBtn" class="btn btn-primary">Thêm phòng mới</button>
+          <button id="importSample" class="btn">Tải mẫu</button>
+        </div>
+        <div>
+          <input id="searchInput" placeholder="Tìm mã phòng hoặc tòa" style="padding:8px; border-radius:6px; border:1px solid #ddd">
+        </div>
+      </div>
+
+      <table class="rooms-table" id="roomsTable">
+        <thead>
+          <tr>
+            <th>Mã phòng</th>
+            <th>Loại</th>
+            <th>Số giường</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="roomsTbody"></tbody>
+      </table>
+
+      <div id="noRooms" style="margin-top:18px;color:#666;display:none">Chưa có phòng nào. Thêm phòng để bắt đầu.</div>
+
+      <!-- Modal -->
+      <div id="roomModal" class="modal" style="display:none">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modalTitle">Thêm phòng</h2>
+            <button class="close-btn" id="closeModal">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Mã phòng</label>
+              <input id="roomCode" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Loại phòng</label>
+              <input id="roomType" class="form-control" placeholder="ví dụ: 2-giường, 4-giường, đơn">
+            </div>
+            <div class="form-group">
+              <label>Số giường</label>
+              <input id="roomBeds" type="number" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Trạng thái</label>
+              <select id="roomStatus" class="form-control">
+                <option value="available">Trống</option>
+                <option value="occupied">Đã đủ</option>
+                <option value="maintenance">Bảo trì</option>
+              </select>
+            </div>
+            <div style="text-align:right">
+              <button id="saveRoomBtn" class="btn btn-primary">Lưu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="admin-helper.js"></script>
+  <script src="admin-rooms.js"></script>
+</body>
+</html>
