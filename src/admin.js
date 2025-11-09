@@ -2,7 +2,27 @@
 // Assumption: admin authentication is lightweight (prompt). Default admin password: admin123
 // This is a demo; in production use proper server-side auth.
 
+// Khởi tạo danh sách người dùng mẫu nếu chưa có
+function initializeUserList() {
+    if (!localStorage.getItem('userList')) {
+        const defaultUsers = [
+            {
+                id: '1',
+                fullName: 'Quản trị viên',
+                username: 'admin',
+                password: '123456', // Trong thực tế nên mã hóa mật khẩu
+                email: 'admin@vlu.edu.vn',
+                phone: '0123456789',
+                role: 'admin',
+                status: 'active'
+            }
+        ];
+        localStorage.setItem('userList', JSON.stringify(defaultUsers));
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    initializeUserList();
     // If user is already logged in as admin (from login page), skip prompt.
     const storedUser = JSON.parse(localStorage.getItem('user')) || null;
 
@@ -63,8 +83,34 @@ function initButtons() {
         if (svcBtn) svcBtn.classList.remove('active');
         if (roomBtn) roomBtn.classList.remove('active');
         if (reportsBtn) reportsBtn.classList.remove('active');
+        if (userAdminBtn) userAdminBtn.classList.remove('active');
         document.querySelector('.page-title').textContent = 'Quản lý phản ánh sự cố';
+        // Ẩn phần phân quyền và quản lý tài khoản
+        const accessControlSection = document.getElementById('accessControlSection');
+        const userManagementSection = document.getElementById('userManagementSection');
+        if (accessControlSection) accessControlSection.style.display = 'none';
+        if (userManagementSection) userManagementSection.style.display = 'none';
         loadFeedback();
+    });
+
+    // Thêm xử lý cho nút Quản lý tài khoản
+    const userAdminBtn = document.getElementById('showUserAdminBtn');
+    if (userAdminBtn) userAdminBtn.addEventListener('click', () => {
+        adminMode = 'users';
+        userAdminBtn.classList.add('active');
+        if (svcBtn) svcBtn.classList.remove('active');
+        if (roomBtn) roomBtn.classList.remove('active');
+        if (reportsBtn) reportsBtn.classList.remove('active');
+        if (feedbackBtn) feedbackBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Quản lý tài khoản';
+        // Ẩn phần phân quyền và hiển thị quản lý tài khoản
+        const accessControlSection = document.getElementById('accessControlSection');
+        const userManagementSection = document.getElementById('userManagementSection');
+        const requestsContainer = document.getElementById('requestsContainer');
+        if (accessControlSection) accessControlSection.style.display = 'none';
+        if (userManagementSection) userManagementSection.style.display = 'block';
+        if (requestsContainer) requestsContainer.style.display = 'none';
+        loadUserList();
     });
     if (showAllBtn) showAllBtn.addEventListener('click', () => { lastFilter = 'all'; loadRequests('all'); });
     if (showPendingBtn) showPendingBtn.addEventListener('click', () => { lastFilter = 'pending'; loadRequests('pending'); });
@@ -75,7 +121,13 @@ function initButtons() {
         svcBtn.classList.add('active');
         if (roomBtn) roomBtn.classList.remove('active');
         if (reportsBtn) reportsBtn.classList.remove('active');
-        document.querySelector('.page-title').textContent = 'Quản lý yêu cầu dịch vụ';
+        if (feedbackBtn) feedbackBtn.classList.remove('active');
+        document.querySelector('.page-title').textContent = 'Phân quyền truy cập';
+        // Hiển thị phần phân quyền
+        const accessControlSection = document.getElementById('accessControlSection');
+        if (accessControlSection) {
+            accessControlSection.style.display = 'block';
+        }
         loadRequests(lastFilter);
     });
     if (roomBtn) roomBtn.addEventListener('click', () => {
@@ -83,7 +135,13 @@ function initButtons() {
         roomBtn.classList.add('active');
         if (svcBtn) svcBtn.classList.remove('active');
         if (reportsBtn) reportsBtn.classList.remove('active');
+        if (feedbackBtn) feedbackBtn.classList.remove('active');
         document.querySelector('.page-title').textContent = 'Quản lý đơn chuyển/trả phòng';
+        // Ẩn phần phân quyền
+        const accessControlSection = document.getElementById('accessControlSection');
+        if (accessControlSection) {
+            accessControlSection.style.display = 'none';
+        }
         loadRequests(lastFilter);
     });
     if (reportsBtn) reportsBtn.addEventListener('click', () => {
@@ -91,7 +149,13 @@ function initButtons() {
         reportsBtn.classList.add('active');
         if (svcBtn) svcBtn.classList.remove('active');
         if (roomBtn) roomBtn.classList.remove('active');
+        if (feedbackBtn) feedbackBtn.classList.remove('active');
         document.querySelector('.page-title').textContent = 'Báo cáo & Thống kê';
+        // Ẩn phần phân quyền
+        const accessControlSection = document.getElementById('accessControlSection');
+        if (accessControlSection) {
+            accessControlSection.style.display = 'none';
+        }
         loadRequests(lastFilter);
     });
 
@@ -578,6 +642,193 @@ function escapeHtml(s) {
     if (!s && s !== 0) return '';
     return String(s).replace(/[&<>"'`]/g, function (m) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[m]; });
 }
+
+// User Management Functions
+function loadUserList(filter = 'all') {
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+    const tableBody = document.getElementById('userTableBody');
+    const filteredUsers = filter === 'all' ? userList : userList.filter(user => user.status === filter);
+
+    tableBody.innerHTML = '';
+    filteredUsers.forEach(user => {
+        const row = document.createElement('tr');
+        
+        // Xác định text trạng thái
+        let statusText = '';
+        switch(user.status) {
+            case 'active': statusText = 'Hoạt động'; break;
+            case 'locked': statusText = 'Đã khóa'; break;
+            case 'deleted': statusText = 'Đã xóa'; break;
+            default: statusText = user.status;
+        }
+
+        row.innerHTML = `
+            <td>${escapeHtml(user.fullName)}</td>
+            <td>${escapeHtml(user.username)}</td>
+            <td>${escapeHtml(user.email)}</td>
+            <td>${escapeHtml(user.phone || '')}</td>
+            <td>${escapeHtml(user.role)}</td>
+            <td><span class="status-${user.status}">${statusText}</span></td>
+            <td class="user-actions">
+                ${user.status !== 'deleted' ? `
+                    <button class="btn" onclick="editUser('${user.id}')" ${user.status === 'deleted' ? 'disabled' : ''}>Sửa</button>
+                    <button class="btn ${user.status === 'active' ? 'btn-danger' : 'btn-primary'}" 
+                            onclick="toggleUserStatus('${user.id}')">
+                        ${user.status === 'active' ? 'Khóa' : 'Mở khóa'}
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteUser('${user.id}')">Xóa</button>
+                ` : `
+                    <button class="btn btn-success" onclick="restoreUser('${user.id}')">Khôi phục</button>
+                `}
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function resetUserForm() {
+    const form = document.getElementById('userForm');
+    form.reset();
+    document.getElementById('userId').value = '';
+}
+
+function saveUser(event) {
+    event.preventDefault();
+    const userId = document.getElementById('userId').value;
+    const fullName = document.getElementById('fullName').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const role = document.getElementById('userRole').value;
+
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+
+    if (userId) {
+        // Cập nhật tài khoản hiện có
+        const index = userList.findIndex(u => u.id === userId);
+        if (index !== -1) {
+            const updatedUser = {
+                ...userList[index],
+                fullName,
+                username,
+                email,
+                phone,
+                role
+            };
+            if (password) {
+                updatedUser.password = password;
+            }
+            userList[index] = updatedUser;
+            alert('Cập nhật tài khoản thành công!');
+        }
+    } else {
+        // Thêm tài khoản mới
+        if (!password) {
+            alert('Vui lòng nhập mật khẩu cho tài khoản mới!');
+            return;
+        }
+        const newUser = {
+            id: Date.now().toString(),
+            fullName,
+            username,
+            password,
+            email,
+            phone,
+            role,
+            status: 'active'
+        };
+        userList.push(newUser);
+        alert('Tạo tài khoản thành công!');
+    }
+
+    localStorage.setItem('userList', JSON.stringify(userList));
+    resetUserForm();
+    loadUserList();
+}
+
+function editUser(userId) {
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+    const user = userList.find(u => u.id === userId);
+    if (user) {
+        document.getElementById('userId').value = user.id;
+        document.getElementById('fullName').value = user.fullName;
+        document.getElementById('username').value = user.username;
+        document.getElementById('password').value = '';
+        document.getElementById('email').value = user.email;
+        document.getElementById('phone').value = user.phone || '';
+        document.getElementById('userRole').value = user.role;
+    }
+}
+
+function toggleUserStatus(userId) {
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+    const index = userList.findIndex(u => u.id === userId);
+    if (index !== -1) {
+        userList[index].status = userList[index].status === 'active' ? 'locked' : 'active';
+        localStorage.setItem('userList', JSON.stringify(userList));
+        loadUserList();
+        
+        // Hiển thị thông báo
+        const action = userList[index].status === 'active' ? 'mở khóa' : 'khóa';
+        alert(`Đã ${action} tài khoản "${userList[index].username}" thành công!`);
+    }
+}
+
+function deleteUser(userId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa tài khoản này không?')) {
+        return;
+    }
+
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+    const index = userList.findIndex(u => u.id === userId);
+    
+    if (index !== -1) {
+        // Kiểm tra nếu là admin duy nhất
+        if (userList[index].role === 'admin' && 
+            userList.filter(u => u.role === 'admin' && u.status === 'active').length <= 1) {
+            alert('Không thể xóa tài khoản admin duy nhất!');
+            return;
+        }
+
+        userList[index].status = 'deleted';
+        localStorage.setItem('userList', JSON.stringify(userList));
+        loadUserList();
+        alert(`Đã xóa tài khoản "${userList[index].username}" thành công!`);
+    }
+}
+
+function restoreUser(userId) {
+    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+    const index = userList.findIndex(u => u.id === userId);
+    
+    if (index !== -1) {
+        userList[index].status = 'active';
+        localStorage.setItem('userList', JSON.stringify(userList));
+        loadUserList();
+        alert(`Đã khôi phục tài khoản "${userList[index].username}" thành công!`);
+    }
+}
+
+// Thêm event listeners cho quản lý tài khoản
+document.addEventListener('DOMContentLoaded', function() {
+    const userForm = document.getElementById('userForm');
+    if (userForm) {
+        userForm.addEventListener('submit', saveUser);
+    }
+
+    const addUserBtn = document.getElementById('addUserBtn');
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', resetUserForm);
+    }
+
+    const userStatusFilter = document.getElementById('userStatusFilter');
+    if (userStatusFilter) {
+        userStatusFilter.addEventListener('change', (e) => {
+            loadUserList(e.target.value);
+        });
+    }
+});
 
 // Populate admin user info in sidebar
 function setAdminUserInfo(user) {

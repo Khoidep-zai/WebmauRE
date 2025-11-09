@@ -50,11 +50,12 @@
         </aside>
 
         <main class="main-content admin-main">
-            <h1 class="page-title">Quản lý yêu cầu dịch vụ</h1>
+            <h1 class="page-title">Phân quyền truy cập</h1>
 
             <div class="admin-actions">
                 <div class="admin-mode">
-                    <button id="showServiceAdminBtn" class="btn btn-toggle active">Quản trị dịch vụ KTX</button>
+                    <button id="showServiceAdminBtn" class="btn btn-toggle active">Phân quyền</button>
+                    <button id="showUserAdminBtn" class="btn btn-toggle">Quản lý tài khoản</button>
                     <button id="showRoomAdminBtn" class="btn btn-toggle">Quản trị phòng</button>
                     <button id="showFeedbackBtn" class="btn btn-toggle">Quản lý phản ánh</button>
                     <button id="showReportsBtn" class="btn btn-toggle">Báo cáo & Thống kê</button>
@@ -64,6 +65,121 @@
                 <button id="showPendingBtn" class="btn btn-primary">Chỉ chờ duyệt</button>
                 <button id="exportBtn" class="btn">Xuất JSON</button>
             </div>
+
+            <!-- Phân quyền truy cập -->
+            <section id="accessControlSection" class="admin-access-control" style="display: none;">
+                <h2>Phân quyền truy cập</h2>
+                <div class="access-form">
+                    <label for="userSelect">Chọn tài khoản:</label>
+                    <select id="userSelect">
+                        <!-- Danh sách tài khoản sẽ được thêm bằng JS -->
+                    </select>
+                    <label for="roleSelect">Chọn vai trò:</label>
+                    <select id="roleSelect">
+                        <option value="admin">Admin</option>
+                        <option value="nhanvien">Nhân viên</option>
+                        <option value="nguoidung">Người dùng</option>
+                    </select>
+                    <label for="permissionList">Quyền truy cập:</label>
+                    <div id="permissionList">
+                        <label><input type="checkbox" value="view"> Xem</label>
+                        <label><input type="checkbox" value="add"> Thêm</label>
+                        <label><input type="checkbox" value="edit"> Sửa</label>
+                        <label><input type="checkbox" value="delete"> Xóa</label>
+                    </div>
+                    <button id="saveAccessBtn" class="btn btn-primary">Lưu/Cập nhật quyền</button>
+                </div>
+                <div class="access-table">
+                    <h3>Danh sách quyền truy cập</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tài khoản</th>
+                                <th>Vai trò</th>
+                                <th>Quyền</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accessTableBody">
+                            <!-- Dữ liệu quyền sẽ được thêm bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Quản lý tài khoản -->
+            <section id="userManagementSection" class="admin-user-management" style="display: none;">
+                <h2>Quản lý tài khoản người dùng</h2>
+                
+                <!-- Form thêm/sửa tài khoản -->
+                <div class="user-form">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="form-group">
+                            <label for="fullName">Họ và tên:</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập:</label>
+                            <input type="text" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mật khẩu:</label>
+                            <input type="password" id="password">
+                            <small>Để trống nếu không muốn thay đổi mật khẩu</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại:</label>
+                            <input type="tel" id="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">Vai trò:</label>
+                            <select id="userRole" required>
+                                <option value="admin">Admin</option>
+                                <option value="staff">Nhân viên</option>
+                                <option value="user">Người dùng</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Lưu tài khoản</button>
+                            <button type="button" class="btn" onclick="resetUserForm()">Hủy</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Danh sách tài khoản -->
+                <div class="user-list">
+                    <div class="list-actions">
+                        <button id="addUserBtn" class="btn btn-primary">Thêm tài khoản mới</button>
+                        <select id="userStatusFilter">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="active">Đang hoạt động</option>
+                            <option value="locked">Đã khóa</option>
+                            <option value="deleted">Đã xóa</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Danh sách tài khoản sẽ được thêm bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             <div id="requestsContainer" class="requests-container">
                 <!-- Requests will be rendered here -->
